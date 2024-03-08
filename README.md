@@ -1,6 +1,6 @@
 # synthasaizer
 
-scrapbook coode 
+scrapbook code 
 
 We are going to find that mapping markov-like progression of tokens in networks will lead us to using fourier-like unpacking of "harmonics" of tokens to compress large-scale real-time streams of LLM-like AIs?
 
