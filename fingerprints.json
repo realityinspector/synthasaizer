@@ -1,0 +1,56 @@
+{
+  "This": {
+    "token": "This",
+    "frequency": 10000,
+    "amplitude": 0.5,
+    "duration": 1
+  },
+  "is": {
+    "token": "is",
+    "frequency": 60000,
+    "amplitude": 0.5,
+    "duration": 1
+  },
+  "a": {
+    "token": "a",
+    "frequency": 110000,
+    "amplitude": 0.5,
+    "duration": 1
+  },
+  "sample": {
+    "token": "sample",
+    "frequency": 160000,
+    "amplitude": 0.5,
+    "duration": 1
+  },
+  "text": {
+    "token": "text",
+    "frequency": 210000,
+    "amplitude": 0.5,
+    "duration": 1
+  },
+  "to": {
+    "token": "to",
+    "frequency": 260000,
+    "amplitude": 0.5,
+    "duration": 1
+  },
+  "encode": {
+    "token": "encode",
+    "frequency": 310000,
+    "amplitude": 0.5,
+    "duration": 1
+  },
+  "and": {
+    "token": "and",
+    "frequency": 360000,
+    "amplitude": 0.5,
+    "duration": 1
+  },
+  "decode.": {
+    "token": "decode.",
+    "frequency": 410000,
+    "amplitude": 0.5,
+    "duration": 1
+  }
+}
