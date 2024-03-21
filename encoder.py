@@ -1,52 +1,61 @@
+# encoder.py
+
 import json
 import numpy as np
 import soundfile as sf
+import matplotlib.pyplot as plt
+import os
 
-def generate_tone(frequency, amplitude, wave_type, duration, sample_rate=44100):
+def generate_tone(frequency, amplitude, duration, sample_rate=44100):
     t = np.linspace(0, duration, int(sample_rate * duration), False)
-    if wave_type == 'sine':
-        tone = np.sin(frequency * t * 2 * np.pi)
-    elif wave_type == 'square':
-        tone = np.sign(np.sin(frequency * t * 2 * np.pi))
+    tone = np.sin(frequency * t * 2 * np.pi)
     return tone * amplitude
 
-def generate_click(duration=0.1, sample_rate=44100):
-    click = np.zeros(int(sample_rate * duration))
-    click[::int(sample_rate * 0.01)] = 1
-    return click
+def generate_silence(duration=0.1, sample_rate=44100):
+    return np.zeros(int(sample_rate * duration))
 
-# Load the audio fingerprint data
-with open('audio_fingerprints.json', 'r') as file:
-    fingerprints = json.load(file)
-    fingerprint_dict = {fp['token']: fp for fp in fingerprints}
+def encode_phrase(phrase, fingerprints_files, encoded_file, encoded_text_file, encoded_fingerprints_file):
+    tokens = phrase.split()
+    audio_signal = np.array([])
+    encoded_fingerprints = {}
 
-# Phrase to encode
-phrase = "The quick brown fox jumps over the lazy dog"
-tokens = phrase.split()
+    placeholder_token = {'token': '<MISSING>', 'frequency': 100, 'amplitude': 0.5, 'duration': 0.1}
 
-# Initialize the audio signal
-audio_signal = np.array([])
+    fingerprint_dict = {}
+    for fingerprints_file in fingerprints_files:
+        with open(fingerprints_file, 'r') as file:
+            fingerprints = json.load(file)
+            fingerprint_dict.update({fp['token']: fp for fp in fingerprints})
 
-# Generate audio for each token
-for token in tokens:
-    if token in fingerprint_dict:
-        fp = fingerprint_dict[token]
-        if 'frequencies' in fp:
-            # Handle multiple frequencies (tone pairs or sequences)
-            for freq in fp['frequencies']:
-                tone = generate_tone(freq, fp['amplitude'], fp['wave_type'], fp['duration'])
-                audio_signal = np.concatenate((audio_signal, tone))
+    for token in tokens:
+        if token in fingerprint_dict:
+            fp = fingerprint_dict[token]
+            encoded_fingerprints[token] = fp
         else:
-            # Handle single frequency
-            tone = generate_tone(fp['frequency'], fp['amplitude'], fp['wave_type'], fp['duration'])
-            audio_signal = np.concatenate((audio_signal, tone))
-    else:
-        print(f"Token '{token}' not found in fingerprints. Skipping.")
+            encoded_fingerprints[token] = placeholder_token
 
-    # Add click track between tokens
-    click = generate_click()
-    audio_signal = np.concatenate((audio_signal, click))
+    for token in tokens:
+        fp = encoded_fingerprints[token]
+        tone = generate_tone(fp['frequency'], fp['amplitude'], fp['duration'])
+        audio_signal = np.concatenate((audio_signal, tone))
+        silence = generate_silence()
+        audio_signal = np.concatenate((audio_signal, silence))
 
-# Save the audio signal as a WAV file
-sf.write('encoded_phrase.wav', audio_signal, 44100)
-print("Phrase encoding completed and saved as 'encoded_phrase.wav'")
+    sf.write(encoded_file, audio_signal, 44100)
+
+    # Save the encoded text
+    with open(encoded_text_file, 'w') as file:
+        file.write(phrase)
+
+    # Save the encoded fingerprints
+    with open(encoded_fingerprints_file, 'w') as file:
+        json.dump(encoded_fingerprints, file)
+
+    plt.figure(figsize=(10, 4))
+    plt.plot(audio_signal)
+    plt.title('Encoded Waveform')
+    plt.xlabel('Sample')
+    plt.ylabel('Amplitude')
+    plt.tight_layout()
+    plt.savefig(f'{os.path.splitext(encoded_file)[0]}.png')
+    plt.close()

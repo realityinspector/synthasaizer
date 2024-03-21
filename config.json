@@ -1,0 +1,21 @@
+{
+  "models": [
+    {
+      "name": "small",
+      "word_count": 10000
+    },
+    {
+      "name": "medium",
+      "word_count": 50000
+    },
+    {
+      "name": "large",
+      "word_count": 100000
+    }
+  ],
+  "output_dir": "output",
+  "wave_types": ["sine", "square", "sawtooth", "triangle"],
+  "volumes": [0.3, 0.5, 0.7],
+  "harmonics": [1, 2, 3],
+  "use_gpu": true
+}
